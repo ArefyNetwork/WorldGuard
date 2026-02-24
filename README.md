@@ -1,56 +1,78 @@
-<h1>
-    <img src="worldguard-logo.svg" alt="WorldGuard" width="400" /> 
-</h1>
+# WorldGuard (No Bypass)
 
-WorldGuard lets you and players guard areas of land against griefers and undesirables, as well as tweak and disable various gameplay features of Minecraft.
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11-green.svg)](https://papermc.io/)
+[![Java](https://img.shields.io/badge/Java-21-red.svg)](https://adoptium.net/)
+[![Paper](https://img.shields.io/badge/Paper%20API-1.21.11-orange.svg)](https://papermc.io/)
+[![WorldGuard](https://img.shields.io/badge/WorldGuard-7.0.16--SNAPSHOT-blue.svg)](https://github.com/EngineHub/WorldGuard)
+[![License](https://img.shields.io/badge/License-GPLv3-green.svg)](LICENSE)
 
-* Block creeper and wither block damage, falling damage, etc.
-* Disable fire spread, lava fire spread, ice formation, Endermen picking up blocks, etc.
-* Blacklist certain items and blocks so they can't be used
-* Warn moderators when certain items and blocks are used
-* Protect areas of your world so only certain people can build in them
-* Set areas where PVP, TNT, mob damage, and other features are disabled
-* Protect your server from various 'exploits' like magical obsidian creation machines
-* Disable, or enable, various Minecraft features, like sponges from classic
-* Add useful commands like an immediate "STOP ALL FIRE SPREAD" command
-* Enable only features you want! Everything is off by default
+**WorldGuard (No Bypass)** is a performance-optimized fork of [FreshSMP's WorldGuard](https://github.com/FreshSMP/WorldGuard) that completely disables the `worldguard.region.bypass` permission system to eliminate unnecessary per-event overhead on busy servers.
 
-Implements per-world event whitelisting as seen in
-the `config.yml`. Check it out for more information!
+## 🎯 Features
 
-How to deactivate unused events:
-```yml
-events:
-    whitelist-mode: false
-    disabled: ["PlayerInteractEvent"]
+- **No Bypass Permission Overhead**: `hasBypass()` always returns `false`, eliminating all per-event permission checks, object allocations, and Guava cache lookups
+- **Async Region Processing**: Based on FreshSMP's `async-move` branch with asynchronous region handling
+- **1.21.11 Native Support**: Compiled against `paper-api:1.21.11-R0.1-SNAPSHOT`
+- **Full Region Protection**: All WorldGuard region flags, protections, and commands work normally
+
+## 🚀 Performance Optimization: Bypass Removal
+
+The standard WorldGuard checks `worldguard.region.bypass.<world>` on **every single player event**:
+
+| Event | Frequency |
+|---|---|
+| Block place/break | Every block |
+| Block interact (chests, doors, buttons) | Every click |
+| Entity damage (PvP, mobs) | Every hit |
+| Entity spawn/destroy/use/mount | Every action |
+| Player movement | ~20 checks/sec per player |
+| Commands, teleports, portals | Every occurrence |
+
+Each check allocates a `BukkitPlayer` wrapper, a `WorldPlayerTuple` cache key, performs Guava cache lookups, and every 2 seconds triggers synchronous permission resolution through the permissions plugin (LuckPerms, etc.) for every online player.
+
+**This fork eliminates all of that.** `hasBypass()` returns `false` immediately with zero allocations, zero cache lookups, and zero permission checks.
+
+### What changes for admins
+
+- `worldguard.region.bypass.<world>` permission has no effect
+- `/rg bypass` command has no effect
+- To build in protected regions, use `/rg addowner <region> <name>` instead
+
+## 📦 Dependencies
+
+### Required
+- **Java** 21+ — Runtime requirement
+- **Paper** 1.21.11 — Server platform (or Paper-based forks: Pufferfish, Purpur, etc.)
+- **WorldEdit** 7.3.18+ — Required dependency
+
+## 🛠️ Installation
+
+1. Build the project:
+```bash
+./gradlew build
 ```
 
-Functionally, you can toggle `whitelist-mode` to disable all events; except those in `events.disabled`.
+2. Copy the output JAR to your server's `plugins/` folder:
+```
+worldguard-bukkit/build/libs/worldguard-bukkit-7.0.16-SNAPSHOT-dist.jar
+```
 
-WorldGuard is open source and is available under the GNU Lesser
-General Public License v3.
+3. Restart the server.
 
-A Bukkit server implementation (such as [Paper](https://papermc.io)) and the [WorldEdit plugin](https://dev.bukkit.org/projects/worldedit) are required to use WorldGuard. You can get a release copy of WorldGuard from the [BukkitDev site](https://dev.bukkit.org/projects/worldguard).
+## 🤝 Credits
 
-Compiling
----------
+- [EngineHub/WorldGuard](https://github.com/EngineHub/WorldGuard) — Original WorldGuard
+- [FreshSMP/WorldGuard](https://github.com/FreshSMP/WorldGuard) — Async-move fork with 1.21.11 support
+- Bypass removal optimization suggested by MachineBreaker (UniverseSpigot)
 
-See [COMPILING.md](COMPILING.md).
+## 📝 License
 
-Contributing
-------------
+WorldGuard is licensed under the GNU Lesser General Public License v3.
 
-We happily accept contributions, especially through pull requests on GitHub.
+## 👨‍💻 Author
 
-Please read CONTRIBUTING.md for important guidelines to follow.
+Optimized and maintained for Arefy Network.
 
-Submissions must be licensed under the GNU Lesser General Public License v3.
+---
 
-Links
------
-
-* [Homepage](https://enginehub.org/worldguard)
-* [Discord](https://discord.gg/enginehub)
-* [Issue tracker](https://github.com/EngineHub/WorldGuard/issues)
-* [Continuous integration](https://builds.enginehub.org) [![Build Status](https://ci.enginehub.org/app/rest/builds/buildType:bt11,branch:master/statusIcon.svg)](http://ci.enginehub.org/viewType.html?buildTypeId=bt11&guest=1)
-* [End-user documentation](https://worldguard.enginehub.org/en/latest/)
+**Version**: 7.0.16-SNAPSHOT | **Minecraft**: 1.21.11 | **Java**: 21+

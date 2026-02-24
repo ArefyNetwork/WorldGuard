@@ -137,16 +137,7 @@ public abstract class AbstractSessionManager implements SessionManager {
 
     @Override
     public boolean hasBypass(LocalPlayer player, World world) {
-        Session sess = getIfPresent(player);
-        if (sess == null || sess.hasBypassDisabled()) {
-            return false;
-        }
-
-        if (WorldGuard.getInstance().getPlatform().getGlobalStateManager().disablePermissionCache) {
-            return BYPASS_PERMISSION_TEST.test(world, player);
-        }
-
-        return bypassCache.getUnchecked(new WorldPlayerTuple(world, player));
+        return false;
     }
 
     @Override

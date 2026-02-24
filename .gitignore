@@ -17,3 +17,6 @@ dependency-reduced-pom.xml
 out/
 
 scripts/
+.claude/
+.env
+Thumbs.db
