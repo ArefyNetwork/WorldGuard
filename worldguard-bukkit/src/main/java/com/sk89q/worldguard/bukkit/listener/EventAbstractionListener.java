@@ -22,7 +22,11 @@ package com.sk89q.worldguard.bukkit.listener;
 import static com.sk89q.worldguard.bukkit.cause.Cause.create;
 
 import com.destroystokyo.paper.event.entity.EntityZapEvent;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.sk89q.worldguard.bukkit.cause.Cause;
 import com.sk89q.worldguard.bukkit.event.DelegateEvent;
 import com.sk89q.worldguard.bukkit.event.block.BreakBlockEvent;
@@ -90,6 +94,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -482,6 +487,18 @@ public class EventAbstractionListener extends AbstractListener {
         // events was through here
         if (target.getType() == Material.CAKE) {
             Events.fireToCancel(event, new UseBlockEvent(event, create(event.getPlayer()), target));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDragonEggInteract(PlayerInteractEvent event) {
+        Block clicked = event.getClickedBlock();
+        if (clicked == null || clicked.getType() != Material.DRAGON_EGG) return;
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
+        LocalPlayer localPlayer = getPlugin().wrapPlayer(event.getPlayer());
+        if (!query.testBuild(BukkitAdapter.adapt(clicked.getLocation()), localPlayer)) {
+            event.setCancelled(true);
         }
     }
 
