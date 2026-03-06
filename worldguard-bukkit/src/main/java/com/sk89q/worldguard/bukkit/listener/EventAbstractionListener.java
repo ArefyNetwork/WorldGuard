@@ -490,15 +490,14 @@ public class EventAbstractionListener extends AbstractListener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onDragonEggInteract(PlayerInteractEvent event) {
         Block clicked = event.getClickedBlock();
         if (clicked == null || clicked.getType() != Material.DRAGON_EGG) return;
         if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
-        LocalPlayer localPlayer = getPlugin().wrapPlayer(event.getPlayer());
-        if (!query.testBuild(BukkitAdapter.adapt(clicked.getLocation()), localPlayer)) {
-            event.setCancelled(true);
+        if (query.getApplicableRegions(BukkitAdapter.adapt(clicked.getLocation())).size() > 0) {
+            event.setUseInteractedBlock(Result.DENY);
         }
     }
 
