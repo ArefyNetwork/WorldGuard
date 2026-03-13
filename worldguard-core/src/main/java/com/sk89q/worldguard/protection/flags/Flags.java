@@ -160,10 +160,13 @@ public final class Flags {
     public static final StateFlag HEALTH_REGEN = register(new StateFlag("natural-health-regen", true));
     public static final StateFlag HUNGER_DRAIN = register(new StateFlag("natural-hunger-drain", true));
 
-    // extra flags (fly, glide, give-effects)
+    // extra flags (fly, glide, give-effects, blocked-effects, command-on-entry, console-command-on-entry)
     public static final StateFlag FLY = register(new StateFlag("fly", true));
     public static final StateFlag GLIDE = register(new StateFlag("glide", true));
     public static final SetFlag<String> GIVE_EFFECTS = register(new SetFlag<>("give-effects", null, new StringFlag(null)));
+    public static final SetFlag<String> BLOCKED_EFFECTS = register(new SetFlag<>("blocked-effects", null, new StringFlag(null)));
+    public static final SetFlag<String> COMMAND_ON_ENTRY = register(new SetFlag<>("command-on-entry", null, new StringFlag(null)));
+    public static final SetFlag<String> CONSOLE_COMMAND_ON_ENTRY = register(new SetFlag<>("console-command-on-entry", null, new StringFlag(null)));
 
     // session and movement based flags
     public static final StateFlag ENTRY = register(new StateFlag("entry", true, RegionGroup.NON_MEMBERS));

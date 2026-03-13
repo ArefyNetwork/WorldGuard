@@ -14,7 +14,7 @@ A performance-optimized fork of [FreshSMP's WorldGuard](https://github.com/Fresh
 - **Async Region Processing**: Based on FreshSMP's `async-move` branch with asynchronous region handling
 - **1.21.11 Native Support**: Compiled against `paper-api:1.21.11-R0.1-SNAPSHOT`
 - **Full Region Protection**: All WorldGuard region flags, protections, and commands work normally
-- **Built-in Extra Flags**: `fly`, `glide`, and `give-effects` flags built directly into WorldGuard — no need for WorldGuardExtraFlags plugin
+- **Built-in Extra Flags**: `fly`, `glide`, `give-effects`, `blocked-effects`, `command-on-entry`, and `console-command-on-entry` built directly into WorldGuard — no need for WorldGuardExtraFlags plugin
 - **Dragon Egg Protection**: Dragon eggs cannot be teleported inside any WorldGuard region
 
 ## 🪶 Built-in Extra Flags
@@ -57,14 +57,46 @@ Applies potion effects to players inside the region. Format: `EFFECT_NAME AMPLIF
 
 ```
 /rg flag <region> give-effects NIGHT_VISION 1 false
-/rg flag <region> give-effects SPEED 2 true
+/rg flag <region> give-effects minecraft:speed 2 true
 ```
 
-- **EFFECT_NAME**: Bukkit potion effect name (e.g., `NIGHT_VISION`, `SPEED`, `JUMP_BOOST`)
+- **EFFECT_NAME**: Bukkit name (`NIGHT_VISION`) or namespaced key (`minecraft:night_vision`)
 - **AMPLIFIER**: Effect level (0 = level I, 1 = level II, etc.)
 - **AMBIENT**: `true` for subtle particles, `false` for normal particles
 
-Effects are re-applied automatically every 500ms while the player is in the region.
+Effects use a 319-tick duration (matching WGEF) and are re-applied every 500ms, so the timer never drops below ~15 seconds on the player's HUD.
+
+### `blocked-effects`
+
+Blocks specific potion effects inside a region. Removes the effect every poll cycle.
+
+```
+/rg flag <region> blocked-effects minecraft:jump_boost
+/rg flag <region> blocked-effects *
+```
+
+Supports `*` to block all potion effects.
+
+### `command-on-entry`
+
+Executes a command as the player when they enter a region.
+
+```
+/rg flag <region> command-on-entry /mine go
+```
+
+Supports `%username%` and `%uuid%` placeholders.
+
+### `console-command-on-entry`
+
+Executes a command as the server console when a player enters a region.
+
+```
+/rg flag <region> console-command-on-entry /ce call portal player:%username% silent:true
+/rg flag <region> console-command-on-entry /effect clear %username% speed
+```
+
+Supports `%username%` and `%uuid%` placeholders.
 
 ## 🥚 Dragon Egg Protection
 
@@ -118,7 +150,7 @@ worldguard-bukkit/build/libs/worldguard-bukkit-7.0.16-SNAPSHOT-dist.jar
 
 - [EngineHub/WorldGuard](https://github.com/EngineHub/WorldGuard) — Original WorldGuard
 - [FreshSMP/WorldGuard](https://github.com/FreshSMP/WorldGuard) — Async-move fork with 1.21.11 support
-- [WorldGuardExtraFlags](https://github.com/aromaa/WorldGuardExtraFlags) — Inspiration for the built-in fly, glide, and give-effects flags
+- [WorldGuardExtraFlags](https://github.com/aromaa/WorldGuardExtraFlags) — Inspiration for the built-in extra flags
 - Bypass removal optimization suggested by MachineBreaker (UniverseSpigot)
 
 ## 📝 License
