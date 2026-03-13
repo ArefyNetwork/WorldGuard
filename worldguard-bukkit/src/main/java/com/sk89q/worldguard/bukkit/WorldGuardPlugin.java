@@ -43,6 +43,7 @@ import com.sk89q.worldguard.bukkit.listener.BuildPermissionListener;
 import com.sk89q.worldguard.bukkit.listener.ChestProtectionListener;
 import com.sk89q.worldguard.bukkit.listener.DebuggingListener;
 import com.sk89q.worldguard.bukkit.listener.EventAbstractionListener;
+import com.sk89q.worldguard.bukkit.listener.ExtraFlagsListener;
 import com.sk89q.worldguard.bukkit.listener.InvincibilityListener;
 import com.sk89q.worldguard.bukkit.listener.PlayerModesListener;
 import com.sk89q.worldguard.bukkit.listener.PlayerMoveListener;
@@ -220,6 +221,11 @@ public class WorldGuardPlugin extends JavaPlugin {
         }
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new PlayerMoveListener(this), 0L, 5L);
+
+        // Extra flags (fly, glide, give-effects) - runs every 10 ticks (500ms)
+        ExtraFlagsListener extraFlagsListener = new ExtraFlagsListener(this);
+        getServer().getPluginManager().registerEvents(extraFlagsListener, this);
+        Bukkit.getScheduler().runTaskTimer(this, extraFlagsListener, 0L, 10L);
 
     }
 
