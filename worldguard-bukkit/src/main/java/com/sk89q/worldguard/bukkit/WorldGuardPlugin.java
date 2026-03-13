@@ -60,6 +60,10 @@ import com.sk89q.worldguard.bukkit.listener.WorldGuardWeatherListener;
 import com.sk89q.worldguard.bukkit.listener.WorldGuardWorldListener;
 import com.sk89q.worldguard.bukkit.listener.WorldRulesListener;
 import com.sk89q.worldguard.bukkit.session.BukkitSessionManager;
+import com.sk89q.worldguard.bukkit.session.handler.BlockedEffectsFlagHandler;
+import com.sk89q.worldguard.bukkit.session.handler.CommandOnEntryFlagHandler;
+import com.sk89q.worldguard.bukkit.session.handler.ConsoleCommandOnEntryFlagHandler;
+import com.sk89q.worldguard.bukkit.session.handler.GiveEffectsFlagHandler;
 import com.sk89q.worldguard.bukkit.util.ClassSourceValidator;
 import com.sk89q.worldguard.bukkit.util.Entities;
 import com.sk89q.worldguard.bukkit.util.Events;
@@ -222,7 +226,13 @@ public class WorldGuardPlugin extends JavaPlugin {
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new PlayerMoveListener(this), 0L, 5L);
 
-        // Extra flags (fly, glide, give-effects) - runs every 10 ticks (500ms)
+        // Register extra flags session handlers (give-effects, blocked-effects, command-on-entry, console-command-on-entry)
+        sessionManager.registerHandler(GiveEffectsFlagHandler.FACTORY, null);
+        sessionManager.registerHandler(BlockedEffectsFlagHandler.FACTORY, null);
+        sessionManager.registerHandler(CommandOnEntryFlagHandler.FACTORY, null);
+        sessionManager.registerHandler(ConsoleCommandOnEntryFlagHandler.FACTORY, null);
+
+        // Extra flags polling for fly and glide (fixes WGEF bug where /fly inside region wasn't caught)
         ExtraFlagsListener extraFlagsListener = new ExtraFlagsListener(this);
         getServer().getPluginManager().registerEvents(extraFlagsListener, this);
         Bukkit.getScheduler().runTaskTimer(this, extraFlagsListener, 0L, 10L);
