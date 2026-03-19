@@ -16,6 +16,7 @@ A performance-optimized fork of [FreshSMP's WorldGuard](https://github.com/Fresh
 - **Full Region Protection**: All WorldGuard region flags, protections, and commands work normally
 - **Built-in Extra Flags**: `fly`, `glide`, `give-effects`, `blocked-effects`, `command-on-entry`, and `console-command-on-entry` built directly into WorldGuard — no need for WorldGuardExtraFlags plugin
 - **Dragon Egg Protection**: Dragon eggs cannot be teleported inside any WorldGuard region
+- **Silent Deny Messages**: `deny-message`, `entry-deny-message`, and `exit-deny-message` default to empty — no spam messages unless explicitly configured
 
 ## 🪶 Built-in Extra Flags
 
