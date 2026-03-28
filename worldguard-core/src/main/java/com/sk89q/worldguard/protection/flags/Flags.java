@@ -161,8 +161,8 @@ public final class Flags {
     public static final StateFlag HUNGER_DRAIN = register(new StateFlag("natural-hunger-drain", true));
 
     // extra flags (fly, glide, give-effects, blocked-effects, command-on-entry, console-command-on-entry)
-    public static final StateFlag FLY = register(new StateFlag("fly", true));
-    public static final StateFlag GLIDE = register(new StateFlag("glide", true));
+    public static final StateFlag FLY = register(new StateFlag("fly", false));
+    public static final StateFlag GLIDE = register(new StateFlag("glide", false));
     public static final SetFlag<String> GIVE_EFFECTS = register(new SetFlag<>("give-effects", null, new StringFlag(null)));
     public static final SetFlag<String> BLOCKED_EFFECTS = register(new SetFlag<>("blocked-effects", null, new StringFlag(null)));
     public static final SetFlag<String> COMMAND_ON_ENTRY = register(new SetFlag<>("command-on-entry", null, new StringFlag(null)));
