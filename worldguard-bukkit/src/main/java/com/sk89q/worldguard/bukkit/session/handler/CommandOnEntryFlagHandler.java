@@ -22,6 +22,7 @@ package com.sk89q.worldguard.bukkit.session.handler;
 import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -29,6 +30,7 @@ import com.sk89q.worldguard.session.MoveType;
 import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.Handler;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,10 +61,20 @@ public class CommandOnEntryFlagHandler extends Handler {
 
         for (Set<String> commandSet : commands) {
             if (!lastCommands.contains(commandSet) && !commandSet.isEmpty()) {
+                Player bukkitPlayer = ((BukkitPlayer) player).getPlayer();
+                WorldGuardPlugin plugin = WorldGuardPlugin.inst();
                 for (String command : commandSet) {
-                    String resolved = command.replace("%username%", player.getName());
+                    String resolved = command.replace("%username%", player.getName())
+                            .replace("%uuid%", player.getUniqueId().toString());
                     if (resolved.startsWith("/")) resolved = resolved.substring(1);
-                    Bukkit.getServer().dispatchCommand(((BukkitPlayer) player).getPlayer(), resolved);
+                    final String finalCommand = resolved;
+                    if (plugin.isFolia()) {
+                        bukkitPlayer.getScheduler().run(plugin,
+                                task -> Bukkit.getServer().dispatchCommand(bukkitPlayer, finalCommand), null);
+                    } else {
+                        Bukkit.getScheduler().runTask(plugin,
+                                () -> Bukkit.getServer().dispatchCommand(bukkitPlayer, finalCommand));
+                    }
                 }
                 break;
             }

@@ -21,6 +21,7 @@ package com.sk89q.worldguard.bukkit.session.handler;
 
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -58,10 +59,19 @@ public class ConsoleCommandOnEntryFlagHandler extends Handler {
 
         for (Set<String> commandSet : commands) {
             if (!lastCommands.contains(commandSet) && !commandSet.isEmpty()) {
+                WorldGuardPlugin plugin = WorldGuardPlugin.inst();
                 for (String command : commandSet) {
-                    String resolved = command.replace("%username%", player.getName());
+                    String resolved = command.replace("%username%", player.getName())
+                            .replace("%uuid%", player.getUniqueId().toString());
                     if (resolved.startsWith("/")) resolved = resolved.substring(1);
-                    Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), resolved);
+                    final String finalCommand = resolved;
+                    if (plugin.isFolia()) {
+                        Bukkit.getGlobalRegionScheduler().run(plugin,
+                                task -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), finalCommand));
+                    } else {
+                        Bukkit.getScheduler().runTask(plugin,
+                                () -> Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), finalCommand));
+                    }
                 }
                 break;
             }
